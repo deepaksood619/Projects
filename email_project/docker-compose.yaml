@@ -1,0 +1,83 @@
+version: "3.7"
+
+services:
+  django_build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deepaksood619/django-container:0.0.1
+
+
+#  django_init_container:
+#    stdin_open: true
+#    tty: true
+#    image: deepaksood619/django-container:0.0.1
+#    container_name: book_store_init_container
+#    working_dir: /root/source
+#    env_file:
+#      - .env
+#    volumes:
+#      - .:/root/
+#    entrypoint:
+#      - /bin/bash
+#      - -c
+#      - |
+#        rm -rf static
+#        python3 manage.py collectstatic --noinput -c && \
+#        python3 manage.py makemigrations && \
+#        python3 manage.py migrate && \
+#        python3 manage.py loaddata sites && \
+#        echo "from zenauth.models import ZenatixUser; ZenatixUser.objects.filter(email='${ZENALYTIX_SU_EMAIL}').delete(); ZenatixUser.objects.create_superuser('admin', '${SU_EMAIL}', '${SU_PASS}')" | python3 manage.py shell
+
+
+  django:
+    stdin_open: true
+    tty: true
+    image: deepaksood619/django-container:0.0.1
+    container_name: django
+    working_dir: /root/source
+    env_file:
+      - .env
+    volumes:
+      - .:/root/source
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        sleep infinity
+    #          npm run start
+#      python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+#    depends_on:
+#      - postgres
+    healthcheck:
+      test: "curl -f http://localhost:8000/admin"
+      start_period: 10s
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+
+#  postgres:
+#    stdin_open: true
+#    tty: true
+#    restart: always
+#    image: postgres:11.5-alpine
+#    container_name: postgres
+#    user: postgres
+#    env_file:
+#      - .env
+#    volumes:
+#      - postgres-volume:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+#      start_period: 10s
+#      interval: 10s
+#      timeout: 10s
+#      retries: 5
+#
+#
+#volumes:
+#  postgres-volume:
+#    external: true
